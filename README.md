@@ -6,7 +6,7 @@ https://docs.google.com/document/d/1XUYhPjxgP_GXN2yNNizM0SQ3dE2R3F3WKfSkHXxio4k/
 
 Adding JLayer
 Download "jlayer-1.0.1.jar"
-https://repo1.maven.org/maven2/javazoom/jlayer/1.0.1/
+[https://repo1.maven.org/maven2/javazoom/jlayer/1.0.1/](https://github.com/mss49/Mobile-Music-Player/blob/main/jlayer-1.0.1.jar)
 
 Import into your eclipse:
   Right-click on your project in the Project Explorer pane.
