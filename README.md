@@ -10,9 +10,15 @@ Download "jlayer-1.0.1.jar"
 
 Import into your eclipse:
   Right-click on your project in the Project Explorer pane.
+  
   Click Properties.
+  
   In the Properties dialog, select Java Build Path on the left-hand side.
+  
   Click on the Libraries tab.
+  
   Click the Add External JARs... button.
+  
   Navigate to the location where you downloaded the jlayer-X.X.X.jar file and select it.
+  
   Click Apply and Close to confirm.
