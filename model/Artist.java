@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Artist {
 	private String name;
+	//implement in CSV text file with 
 	private int artist_id;
 	private ArrayList<Integer> song_ids;
 	
