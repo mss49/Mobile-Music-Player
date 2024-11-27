@@ -11,10 +11,11 @@ public class Artist {
 	
 	
 	//default constructor
-	public Artist(String name, ArrayList<Integer> song_ids) {
+	public Artist(String name, ArrayList<Integer> song_ids, int artist_id) {
 		super();
 		this.name = name;
 		this.song_ids = song_ids;
+		this.artist_id = artist_id;
 	}
 	
 	//getter and setters
@@ -29,6 +30,9 @@ public class Artist {
 	}
 	public void setSong_ids(ArrayList<Integer> song_ids) {
 		this.song_ids = song_ids;
+	}
+	public int getArtist_id() {
+		return artist_id;
 	}
 	
 	
