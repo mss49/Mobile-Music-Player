@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.util.Date;
 import java.util.List;
 
-import javazoom.jl.player.Player;
+import model.CustomMP3Player;
 
 public class Song {
 
@@ -21,18 +21,18 @@ public class Song {
 	
 	//returns a Player object which can be used by the controller to play a song
 	//returns an error or null pointer if filepath is incorrect
-	public Player getSongPlayer() throws Exception {
-		if (fileInputStream != null) {
-			try {
-				fileInputStream.close();
-			} catch (Exception e) {
-				// Ignore closing errors
-			}
+	public CustomMP3Player getSongPlayer() throws Exception {
+		if (mp3FilePath == null || mp3FilePath.isEmpty()) {
+			throw new IllegalStateException("MP3 file path is not set");
 		}
 		
+		// Close existing streams before creating new ones
+		closeStreams();
+		
+		// Create new streams
 		fileInputStream = new FileInputStream(this.mp3FilePath);
 		bufferedInputStream = new BufferedInputStream(fileInputStream);
-		return new Player(bufferedInputStream);
+		return new CustomMP3Player(bufferedInputStream, this.mp3FilePath);
 	}
 	
 	//must save the song to CSV

@@ -1,14 +1,18 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javafx.application.Application;
+import view.MusicPlayerGUI;
 
 /**
- *
- * Starts the console UI for the MusicPlayer
+ * Starts the GUI for the MusicPlayer
  */
 public class Main {
-	private static MusicPlayer musicplayer;
-
-
+	public static void main(String[] args) {
+		try {
+			MusicPlayerGUI.launch(MusicPlayerGUI.class, args);
+		} catch (Exception e) {
+			System.err.println("Error starting application: " + e.getMessage());
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 }
 

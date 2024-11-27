@@ -10,6 +10,8 @@ import model.MusicLibrary;
 import model.Song;
 import model.Playlist;
 import java.util.concurrent.TimeUnit;
+import controller.PlayerController;
+import java.util.ArrayList;
 
 public class MusicPlayerGUI extends Application {
     private MusicLibrary musicLibrary;
@@ -22,15 +24,14 @@ public class MusicPlayerGUI extends Application {
     private Button previousButton;
     private Slider volumeSlider;
     private ProgressBar songProgress;
-    private javazoom.jl.player.Player currentPlayer;
-    private Thread playerThread;
-    private boolean isPlaying;
+    private PlayerController playerController;
 
     @Override
     public void start(Stage primaryStage) {
         try {
             musicLibrary = MusicLibrary.getInstance();
             musicLibrary.loadLibrary();
+            playerController = new PlayerController();
 
             // Populate song list
             songListView = new ListView<>();
@@ -57,6 +58,10 @@ public class MusicPlayerGUI extends Application {
             primaryStage.setTitle("Music Player");
             primaryStage.setScene(scene);
             primaryStage.show();
+
+            primaryStage.setOnCloseRequest(event -> {
+                shutdown();
+            });
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -67,6 +72,17 @@ public class MusicPlayerGUI extends Application {
         }
     }
 
+    @Override
+    public void stop() {
+        shutdown();
+    }
+
+    private void shutdown() {
+        if (playerController != null) {
+            playerController.shutdown();
+        }
+    }
+
     private VBox createPlaylistPanel() {
         VBox panel = new VBox(10);
         panel.setPadding(new Insets(10));
@@ -74,6 +90,7 @@ public class MusicPlayerGUI extends Application {
 
         Label playlistLabel = new Label("Playlists");
         playlistListView = new ListView<>();
+        playlistListView.getItems().addAll(musicLibrary.getPlaylists().values());
         Button newPlaylistButton = new Button("New Playlist");
 
         panel.getChildren().addAll(playlistLabel, playlistListView, newPlaylistButton);
@@ -140,13 +157,40 @@ public class MusicPlayerGUI extends Application {
     }
 
     private void setupControlHandlers() {
-        playButton.setOnAction(e -> playSong());
-        pauseButton.setOnAction(e -> pauseSong());
-        nextButton.setOnAction(e -> playNextSong());
-        previousButton.setOnAction(e -> playPreviousSong());
+        playButton.setOnAction(e -> {
+            Song selectedSong = songListView.getSelectionModel().getSelectedItem();
+            if (selectedSong != null) {
+                playerController.handlePlayButton(selectedSong);
+                updateButtonStates();
+                updateNowPlayingLabel(selectedSong);
+            }
+        });
+        
+        pauseButton.setOnAction(e -> {
+            playerController.pausePlayback();
+            updateButtonStates();
+        });
+        
+        nextButton.setOnAction(e -> {
+            playNextSong();
+            updateButtonStates();
+        });
+        
+        previousButton.setOnAction(e -> {
+            playPreviousSong();
+            updateButtonStates();
+        });
+        
         volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             updateVolume(newVal.doubleValue());
         });
+    }
+
+    private void updateButtonStates() {
+        boolean isPlaying = playerController.isPlaying();
+        boolean isPaused = playerController.isPaused();
+        
+        playButton.setDisable(isPlaying && !isPaused);
     }
 
     private void createNewPlaylist() {
@@ -156,104 +200,37 @@ public class MusicPlayerGUI extends Application {
         dialog.setContentText("Please enter playlist name:");
 
         dialog.showAndWait().ifPresent(name -> {
-            // Create new playlist logic
+            if (!name.trim().isEmpty()) {
+                int playlistId = generateUniquePlaylistId();
+                Playlist newPlaylist = new Playlist(new ArrayList<>(), playlistId);
+                newPlaylist.setName(name.trim());
+                musicLibrary.addPlaylist(newPlaylist);
+                playlistListView.getItems().add(newPlaylist);
+            }
         });
     }
 
+    private int generateUniquePlaylistId() {
+        return musicLibrary.getNextPlaylistId();
+    }
+
     private void filterSongs(String searchText) {
-        // Implement song filtering logic
-    }
-
-    private void playSong() {
-        Song selectedSong = songListView.getSelectionModel().getSelectedItem();
-        if (selectedSong != null) {
-            if (currentPlayer != null) {
-                stopCurrentSong();
-            }
-            
-            playerThread = new Thread(() -> {
-                try {
-                    currentPlayer = selectedSong.getSongPlayer();
-                    if (currentPlayer != null) {
-                        isPlaying = true;
-                        javafx.application.Platform.runLater(() -> {
-                            nowPlayingLabel.setText("Now Playing: " + selectedSong.getSongTitle());
-                        });
-                        
-                        while (isPlaying && !Thread.currentThread().isInterrupted()) {
-                            try {
-                                if (!currentPlayer.play(1)) {
-                                    break;
-                                }
-                            } catch (Exception e) {
-                                if (!"Stream Closed".equals(e.getMessage())) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    javafx.application.Platform.runLater(() -> {
-                        nowPlayingLabel.setText("Error playing: " + e.getMessage());
-                    });
-                }
-            });
-            playerThread.setDaemon(true);
-            playerThread.start();
-        }
-    }
-
-    private void pauseSong() {
-        if (currentPlayer != null && isPlaying) {
-            isPlaying = false;
-            if (playerThread != null) {
-                playerThread.interrupt();
-            }
-        }
-    }
-
-    private void stopCurrentSong() {
-        isPlaying = false;
-        if (playerThread != null) {
-            playerThread.interrupt();
-            try {
-                playerThread.join(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        
-        Song currentSong = songListView.getSelectionModel().getSelectedItem();
-        if (currentSong != null) {
-            currentSong.closeStreams();
-        }
-        
-        if (currentPlayer != null) {
-            try {
-                currentPlayer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            currentPlayer = null;
-        }
-        playerThread = null;
     }
 
     private void playNextSong() {
-        // Implement next song logic
     }
 
     private void playPreviousSong() {
-        // Implement previous song logic
     }
 
     private void updateVolume(double value) {
-        // Implement volume update logic
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void updateNowPlayingLabel(Song song) {
+        if (song != null) {
+            nowPlayingLabel.setText("Now Playing: " + song.getSongTitle());
+        } else {
+            nowPlayingLabel.setText("Not Playing");
+        }
     }
 } 
