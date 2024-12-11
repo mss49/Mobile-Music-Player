@@ -43,16 +43,20 @@ public class MusicPlayer {
         addButton.addActionListener(e -> addSong());
         JButton renameButton = new JButton("Rename Song");
         renameButton.addActionListener(e -> renameSelectedSong());
+        JButton deleteButton = new JButton("Delete Song");
+        deleteButton.addActionListener(e -> deleteSelectedSong());
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(2, 3));
+        buttonPanel.setLayout(new GridLayout(2, 4));
         buttonPanel.add(playButton);
         buttonPanel.add(pauseButton);
         buttonPanel.add(resumeButton);
         buttonPanel.add(stopButton);
         buttonPanel.add(addButton);
         buttonPanel.add(renameButton);
+        buttonPanel.add(deleteButton);
 
+        frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
 
@@ -185,6 +189,19 @@ public class MusicPlayer {
             }
         } else {
             JOptionPane.showMessageDialog(frame, "Please select a song to rename.");
+        }
+    }
+
+    private void deleteSelectedSong() {
+        Song selectedSong = songList.getSelectedValue();
+        if (selectedSong != null) {
+            int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete the selected song?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                removeSong(selectedSong.getName());
+                songListModel.removeElement(selectedSong);
+            }
+        } else {
+            JOptionPane.showMessageDialog(frame, "Please select a song to delete.");
         }
     }
 
