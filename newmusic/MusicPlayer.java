@@ -154,7 +154,81 @@ public class MusicPlayer {
         southPanel.add(progressBar, BorderLayout.CENTER);
         southPanel.add(timeLabel, BorderLayout.EAST);
         frame.add(southPanel, BorderLayout.SOUTH);
+
+        // Add key bindings after creating the frame
+        addKeyboardShortcuts();
+
         frame.setVisible(true);
+    }
+
+    private void addKeyboardShortcuts() {
+        InputMap inputMap = frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = frame.getRootPane().getActionMap();
+
+        // Space for Play/Pause
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "playPause");
+        actionMap.put("playPause", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if (isPlaying) pause();
+                else resume();
+            }
+        });
+
+        // Left arrow for Previous
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "previous");
+        actionMap.put("previous", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                playPreviousSong();
+            }
+        });
+
+        // Right arrow for Next
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "next");
+        actionMap.put("next", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                playNextSong();
+            }
+        });
+
+        // P for Pause
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), "pause");
+        actionMap.put("pause", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                pause();
+            }
+        });
+
+        // R for Resume
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "resume");
+        actionMap.put("resume", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                resume();
+            }
+        });
+
+        // M for Mute toggle
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, 0), "mute");
+        actionMap.put("mute", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                toggleMute();
+            }
+        });
+
+        // Up arrow for volume up
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "volumeUp");
+        actionMap.put("volumeUp", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                volumeSlider.setValue(Math.min(volumeSlider.getValue() + 10, 100));
+            }
+        });
+
+        // Down arrow for volume down
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "volumeDown");
+        actionMap.put("volumeDown", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                volumeSlider.setValue(Math.max(volumeSlider.getValue() - 10, 0));
+            }
+        });
     }
 
     private void playSelectedSong() {
