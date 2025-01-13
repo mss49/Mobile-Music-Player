@@ -111,6 +111,19 @@ public class MusicPlayer {
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
         progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
+        progressBar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (currentClip != null && currentClip.isOpen()) {
+                    int mouseX = e.getX();
+                    int progressBarWidth = progressBar.getWidth();
+                    float percentage = (float) mouseX / progressBarWidth;
+                    long newPosition = (long) (currentClip.getMicrosecondLength() * percentage);
+                    currentClip.setMicrosecondPosition(newPosition);
+                    updateTimeLabel(); // Update the display immediately
+                }
+            }
+        });
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(nowPlayingLabel, BorderLayout.NORTH);
         southPanel.add(progressBar, BorderLayout.CENTER);
