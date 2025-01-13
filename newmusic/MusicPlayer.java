@@ -15,6 +15,7 @@ public class MusicPlayer {
     private DefaultListModel<Song> songListModel;
     private JList<Song> songList;
     private JSlider volumeSlider;
+    private JLabel nowPlayingLabel;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -93,6 +94,9 @@ public class MusicPlayer {
         // Add components to the frame
         frame.add(searchPanel, BorderLayout.NORTH);
         frame.add(sidePanel, BorderLayout.CENTER);
+        nowPlayingLabel = new JLabel("Now Playing: None");
+        nowPlayingLabel.setHorizontalAlignment(JLabel.CENTER);
+        frame.add(nowPlayingLabel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
 
@@ -151,6 +155,7 @@ public class MusicPlayer {
             currentClip = AudioSystem.getClip();
             currentClip.open(audioStream);
             currentClip.start();
+            nowPlayingLabel.setText("Now Playing: " + song.getName());
             isPlaying = true;
         } catch (Exception e) {
             System.err.println("Error playing song: " + e.getMessage());
@@ -210,6 +215,7 @@ public class MusicPlayer {
             currentClip.stop();
             currentClip.close();
             isPlaying = false;
+            nowPlayingLabel.setText("Now Playing: None");
         }
     }
 
