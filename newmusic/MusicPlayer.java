@@ -16,8 +16,11 @@ public class MusicPlayer {
     private JList<Song> songList;
     private JSlider volumeSlider;
     private JLabel nowPlayingLabel;
+35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
     private JLabel timeLabel;
     private Timer timer;
+
+main
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -98,12 +101,15 @@ public class MusicPlayer {
         frame.add(sidePanel, BorderLayout.CENTER);
         nowPlayingLabel = new JLabel("Now Playing: None");
         nowPlayingLabel.setHorizontalAlignment(JLabel.CENTER);
+35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
         timeLabel = new JLabel("0:00");
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(nowPlayingLabel, BorderLayout.CENTER);
         southPanel.add(timeLabel, BorderLayout.EAST);
         frame.add(southPanel, BorderLayout.SOUTH);
+        frame.add(nowPlayingLabel, BorderLayout.SOUTH);
+main
         frame.setVisible(true);
     }
 
@@ -226,10 +232,12 @@ public class MusicPlayer {
             currentClip.close();
             isPlaying = false;
             nowPlayingLabel.setText("Now Playing: None");
+35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
             if (timer != null) {
                 timer.stop();
                 timeLabel.setText("0:00");
             }
+main
         }
     }
 
