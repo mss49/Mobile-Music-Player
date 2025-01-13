@@ -16,6 +16,11 @@ public class MusicPlayer {
     private JList<Song> songList;
     private JSlider volumeSlider;
     private JLabel nowPlayingLabel;
+35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
+    private JLabel timeLabel;
+    private Timer timer;
+
+main
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -96,7 +101,15 @@ public class MusicPlayer {
         frame.add(sidePanel, BorderLayout.CENTER);
         nowPlayingLabel = new JLabel("Now Playing: None");
         nowPlayingLabel.setHorizontalAlignment(JLabel.CENTER);
+35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
+        timeLabel = new JLabel("0:00");
+        timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(nowPlayingLabel, BorderLayout.CENTER);
+        southPanel.add(timeLabel, BorderLayout.EAST);
+        frame.add(southPanel, BorderLayout.SOUTH);
         frame.add(nowPlayingLabel, BorderLayout.SOUTH);
+main
         frame.setVisible(true);
     }
 
@@ -157,6 +170,9 @@ public class MusicPlayer {
             currentClip.start();
             nowPlayingLabel.setText("Now Playing: " + song.getName());
             isPlaying = true;
+            if (timer != null) timer.stop();
+            timer = new Timer(1000, e -> updateTimeLabel());
+            timer.start();
         } catch (Exception e) {
             System.err.println("Error playing song: " + e.getMessage());
         }
@@ -216,6 +232,12 @@ public class MusicPlayer {
             currentClip.close();
             isPlaying = false;
             nowPlayingLabel.setText("Now Playing: None");
+35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
+            if (timer != null) {
+                timer.stop();
+                timeLabel.setText("0:00");
+            }
+main
         }
     }
 
@@ -262,6 +284,13 @@ public class MusicPlayer {
             float range = gainControl.getMaximum() - gainControl.getMinimum();
             float gain = (range * (volumeSlider.getValue() / 100.0f)) + gainControl.getMinimum();
             gainControl.setValue(gain);
+        }
+    }
+
+    private void updateTimeLabel() {
+        if (currentClip != null) {
+            long seconds = currentClip.getMicrosecondPosition() / 1000000;
+            timeLabel.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
         }
     }
 
