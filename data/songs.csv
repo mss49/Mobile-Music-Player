@@ -1,2 +1,0 @@
-songId,title,artistIds,releaseDate,isFavorite,mp3FilePath
-1,"test","1",2024-03-19,false,"./music/test.mp3"
