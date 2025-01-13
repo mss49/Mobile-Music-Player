@@ -29,6 +29,13 @@ public class MusicPlayer {
     private JToggleButton loopButton;
     private int currentSongIndex = -1;
     private boolean sortAscending = true;
+    private boolean isDarkMode = false;
+    private final Color LIGHT_BG = new Color(240, 240, 240);
+    private final Color LIGHT_FG = Color.BLACK;
+    private final Color DARK_BG = new Color(50, 50, 50);
+    private final Color DARK_FG = Color.WHITE;
+    private JPanel searchPanel;
+    private JPanel buttonPanel;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -43,7 +50,7 @@ public class MusicPlayer {
         frame.setLayout(new BorderLayout());
 
         // Create the search bar
-        JPanel searchPanel = new JPanel();
+        searchPanel = new JPanel();
         JTextField searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
         JButton sortButton = new JButton("Sort A-Z");
@@ -62,14 +69,8 @@ public class MusicPlayer {
         JScrollPane songListScrollPane = new JScrollPane(songList);
         songListScrollPane.setPreferredSize(new Dimension(200, 300));
 
-        // Create the playlist panel
-        DefaultListModel<Song> playlistModel = new DefaultListModel<>();
-        JList<Song> playlistList = new JList<>(playlistModel);
-        JScrollPane playlistScrollPane = new JScrollPane(playlistList);
-        playlistScrollPane.setPreferredSize(new Dimension(200, 300));
-
         // Create the button panel
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(2, 4));
         JButton playButton = new JButton("Play");
         playButton.addActionListener(e -> playSelectedSong());
@@ -112,21 +113,23 @@ public class MusicPlayer {
         loopButton.addActionListener(e -> toggleLoop());
         buttonPanel.add(loopButton);
 
+        JButton themeButton = new JButton("Dark Mode");
+        themeButton.addActionListener(e -> {
+            toggleTheme();
+            themeButton.setText(isDarkMode ? "Light Mode" : "Dark Mode");
+        });
+        searchPanel.add(themeButton);
+
         // Create a main panel to hold the song list and button panel
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(songListScrollPane, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Create a panel to hold both the song list and playlist
-        JPanel sidePanel = new JPanel();
-        sidePanel.setLayout(new GridLayout(1, 2)); // Two columns for song list and playlist
-        sidePanel.add(mainPanel);
-        sidePanel.add(playlistScrollPane);
-
         // Add components to the frame
         frame.add(searchPanel, BorderLayout.NORTH);
-        frame.add(sidePanel, BorderLayout.CENTER);
+        frame.add(mainPanel, BorderLayout.CENTER);
+        
         nowPlayingLabel = new JLabel("Now Playing: None");
         nowPlayingLabel.setHorizontalAlignment(JLabel.CENTER);
         timeLabel = new JLabel("0:00");
@@ -419,6 +422,27 @@ public class MusicPlayer {
         saveSongsToCSV();
         
         sortAscending = !sortAscending;
+    }
+
+    private void toggleTheme() {
+        isDarkMode = !isDarkMode;
+        Color bg = isDarkMode ? DARK_BG : LIGHT_BG;
+        Color fg = isDarkMode ? DARK_FG : LIGHT_FG;
+
+        frame.getContentPane().setBackground(bg);
+        songList.setBackground(bg);
+        songList.setForeground(fg);
+        searchPanel.setBackground(bg);
+        buttonPanel.setBackground(bg);
+        progressBar.setBackground(bg);
+        progressBar.setForeground(fg);
+        nowPlayingLabel.setBackground(fg);
+        nowPlayingLabel.setForeground(fg);
+        timeLabel.setBackground(bg);
+        timeLabel.setForeground(fg);
+
+        // Update all components in the frame
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     public static void main(String[] args) {
