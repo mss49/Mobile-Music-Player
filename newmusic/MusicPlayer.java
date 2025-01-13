@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MusicPlayer {
     private List<Song> playlist;
@@ -26,6 +28,7 @@ public class MusicPlayer {
     private boolean isLooping = false;
     private JToggleButton loopButton;
     private int currentSongIndex = -1;
+    private boolean sortAscending = true;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -43,9 +46,15 @@ public class MusicPlayer {
         JPanel searchPanel = new JPanel();
         JTextField searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
+        JButton sortButton = new JButton("Sort A-Z");
+        sortButton.addActionListener(e -> {
+            sortSongList();
+            sortButton.setText(sortAscending ? "Sort Z-A" : "Sort A-Z");
+        });
         searchButton.addActionListener(e -> searchSongs(searchField.getText()));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
+        searchPanel.add(sortButton);
 
         // Create the song list panel
         songListModel = new DefaultListModel<>();
@@ -387,6 +396,30 @@ public class MusicPlayer {
             playSong(nextSong);
             songList.setSelectedIndex(currentSongIndex);
         }
+    }
+
+    private void sortSongList() {
+        List<Song> songs = new ArrayList<>();
+        for (int i = 0; i < songListModel.getSize(); i++) {
+            songs.add(songListModel.getElementAt(i));
+        }
+        
+        Comparator<Song> comparator = Comparator.comparing(Song::getName, String.CASE_INSENSITIVE_ORDER);
+        if (!sortAscending) {
+            comparator = comparator.reversed();
+        }
+        Collections.sort(songs, comparator);
+        
+        songListModel.clear();
+        for (Song song : songs) {
+            songListModel.addElement(song);
+        }
+        
+        playlist.clear();
+        playlist.addAll(songs);
+        saveSongsToCSV();
+        
+        sortAscending = !sortAscending;
     }
 
     public static void main(String[] args) {
