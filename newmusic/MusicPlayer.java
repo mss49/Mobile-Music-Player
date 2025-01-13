@@ -9,6 +9,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 public class MusicPlayer {
     private List<Song> playlist;
@@ -41,6 +44,7 @@ public class MusicPlayer {
         playlist = new ArrayList<>();
         createGUI();
         loadSongsFromCSV();
+        loadSettings();
     }
 
     private void createGUI() {
@@ -157,6 +161,13 @@ public class MusicPlayer {
 
         // Add key bindings after creating the frame
         addKeyboardShortcuts();
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                saveSettings();
+            }
+        });
 
         frame.setVisible(true);
     }
@@ -517,6 +528,40 @@ public class MusicPlayer {
 
         // Update all components in the frame
         SwingUtilities.updateComponentTreeUI(frame);
+    }
+
+    private void saveSettings() {
+        try {
+            Properties props = new Properties();
+            props.setProperty("lastSong", String.valueOf(currentSongIndex));
+            props.setProperty("volume", String.valueOf(volumeSlider.getValue()));
+            props.store(new FileOutputStream("settings.properties"), null);
+        } catch (IOException e) {
+            System.err.println("Error saving settings: " + e.getMessage());
+        }
+    }
+
+    private void loadSettings() {
+        try {
+            Properties props = new Properties();
+            if (new File("settings.properties").exists()) {
+                props.load(new FileInputStream("settings.properties"));
+                
+                // Restore volume
+                String volume = props.getProperty("volume", "100");
+                volumeSlider.setValue(Integer.parseInt(volume));
+                
+                // Restore last played song
+                String lastSong = props.getProperty("lastSong", "-1");
+                int songIndex = Integer.parseInt(lastSong);
+                if (songIndex >= 0 && songIndex < songListModel.getSize()) {
+                    songList.setSelectedIndex(songIndex);
+                    currentSongIndex = songIndex;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading settings: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
