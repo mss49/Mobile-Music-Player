@@ -209,6 +209,21 @@ public class MusicPlayer {
             if (timer != null) timer.stop();
             timer = new Timer(1000, e -> updateTimeLabel());
             timer.start();
+
+            currentClip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    if (isLooping && currentClip.getMicrosecondPosition() >= currentClip.getMicrosecondLength()) {
+                        // Existing loop code...
+                    } else if (!isLooping && currentClip.getMicrosecondPosition() >= currentClip.getMicrosecondLength()) {
+                        // Auto-play next song
+                        SwingUtilities.invokeLater(() -> {
+                            if (currentSongIndex < songListModel.getSize() - 1) {
+                                playNextSong();
+                            }
+                        });
+                    }
+                }
+            });
         } catch (Exception e) {
             System.err.println("Error playing song: " + e.getMessage());
         }
