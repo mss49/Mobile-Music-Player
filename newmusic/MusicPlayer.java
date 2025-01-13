@@ -105,13 +105,13 @@ public class MusicPlayer {
         muteButton.addActionListener(e -> toggleMute());
         buttonPanel.add(muteButton);
 
-        volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
-        volumeSlider.addChangeListener(e -> updateVolume());
-        buttonPanel.add(volumeSlider);
-
         loopButton = new JToggleButton("Loop");
         loopButton.addActionListener(e -> toggleLoop());
         buttonPanel.add(loopButton);
+
+        volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
+        volumeSlider.addChangeListener(e -> updateVolume());
+        buttonPanel.add(volumeSlider);
 
         JButton themeButton = new JButton("Dark Mode");
         themeButton.addActionListener(e -> {
