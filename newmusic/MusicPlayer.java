@@ -272,16 +272,6 @@ public class MusicPlayer {
         saveSongsToCSV();
     }
 
-    public List<Song> searchSongs(String query) {
-        List<Song> results = new ArrayList<>();
-        for (Song song : playlist) {
-            if (song.getName().toLowerCase().contains(query.toLowerCase())) {
-                results.add(song);
-            }
-        }
-        return results;
-    }
-
     public List<Song> getPlaylist() {
         return new ArrayList<>(playlist);
     }
@@ -331,10 +321,19 @@ public class MusicPlayer {
 
     // Method to handle song search
     private void searchSongs(String query) {
-        List<Song> results = searchSongs(query);
         songListModel.clear();
-        for (Song song : results) {
-            songListModel.addElement(song);
+        if (query.trim().isEmpty()) {
+            // If search is empty, show all songs
+            for (Song song : playlist) {
+                songListModel.addElement(song);
+            }
+        } else {
+            // Show only matching songs
+            for (Song song : playlist) {
+                if (song.getName().toLowerCase().contains(query.toLowerCase())) {
+                    songListModel.addElement(song);
+                }
+            }
         }
     }
 
