@@ -25,6 +25,7 @@ public class MusicPlayer {
     private JProgressBar progressBar;
     private boolean isLooping = false;
     private JToggleButton loopButton;
+    private int currentSongIndex = -1;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -75,8 +76,14 @@ public class MusicPlayer {
         renameButton.addActionListener(e -> renameSelectedSong());
         JButton deleteButton = new JButton("Delete Song");
         deleteButton.addActionListener(e -> deleteSelectedSong());
+        JButton previousButton = new JButton("Previous");
+        JButton nextButton = new JButton("Next");
+        previousButton.addActionListener(e -> playPreviousSong());
+        nextButton.addActionListener(e -> playNextSong());
 
+        buttonPanel.add(previousButton);
         buttonPanel.add(playButton);
+        buttonPanel.add(nextButton);
         buttonPanel.add(pauseButton);
         buttonPanel.add(resumeButton);
         buttonPanel.add(stopButton);
@@ -141,6 +148,7 @@ public class MusicPlayer {
     private void playSelectedSong() {
         Song selectedSong = songList.getSelectedValue();
         if (selectedSong != null) {
+            currentSongIndex = songList.getSelectedIndex();
             playSong(selectedSong);
         }
     }
@@ -259,6 +267,7 @@ public class MusicPlayer {
             currentClip.stop();
             currentClip.close();
             isPlaying = false;
+            currentSongIndex = -1;
             nowPlayingLabel.setText("Now Playing: None");
             if (timer != null) {
                 timer.stop();
@@ -344,6 +353,24 @@ public class MusicPlayer {
         isLooping = loopButton.isSelected();
         if (currentClip != null) {
             currentClip.loop(isLooping ? Clip.LOOP_CONTINUOUSLY : 0);
+        }
+    }
+
+    private void playPreviousSong() {
+        if (currentSongIndex > 0) {
+            currentSongIndex--;
+            Song previousSong = songListModel.getElementAt(currentSongIndex);
+            playSong(previousSong);
+            songList.setSelectedIndex(currentSongIndex);
+        }
+    }
+
+    private void playNextSong() {
+        if (currentSongIndex < songListModel.getSize() - 1) {
+            currentSongIndex++;
+            Song nextSong = songListModel.getElementAt(currentSongIndex);
+            playSong(nextSong);
+            songList.setSelectedIndex(currentSongIndex);
         }
     }
 
