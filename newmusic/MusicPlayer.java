@@ -23,6 +23,8 @@ public class MusicPlayer {
     private boolean isMuted = false;
     private float lastVolume = 100;
     private JProgressBar progressBar;
+    private boolean isLooping = false;
+    private JToggleButton loopButton;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -89,6 +91,10 @@ public class MusicPlayer {
         volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
         volumeSlider.addChangeListener(e -> updateVolume());
         buttonPanel.add(volumeSlider);
+
+        loopButton = new JToggleButton("Loop");
+        loopButton.addActionListener(e -> toggleLoop());
+        buttonPanel.add(loopButton);
 
         // Create a main panel to hold the song list and button panel
         JPanel mainPanel = new JPanel();
@@ -186,6 +192,9 @@ public class MusicPlayer {
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
             currentClip = AudioSystem.getClip();
             currentClip.open(audioStream);
+            if (isLooping) {
+                currentClip.loop(Clip.LOOP_CONTINUOUSLY);
+            }
             currentClip.start();
             nowPlayingLabel.setText("Now Playing: " + song.getName());
             isPlaying = true;
@@ -328,6 +337,13 @@ public class MusicPlayer {
                 volumeSlider.setValue((int) lastVolume);
             }
             updateVolume();
+        }
+    }
+
+    private void toggleLoop() {
+        isLooping = loopButton.isSelected();
+        if (currentClip != null) {
+            currentClip.loop(isLooping ? Clip.LOOP_CONTINUOUSLY : 0);
         }
     }
 
