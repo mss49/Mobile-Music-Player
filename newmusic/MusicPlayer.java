@@ -22,6 +22,7 @@ public class MusicPlayer {
     private Timer timer;
     private boolean isMuted = false;
     private float lastVolume = 100;
+    private JProgressBar progressBar;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -108,8 +109,11 @@ public class MusicPlayer {
         nowPlayingLabel.setHorizontalAlignment(JLabel.CENTER);
         timeLabel = new JLabel("0:00");
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setStringPainted(true);
         JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.add(nowPlayingLabel, BorderLayout.CENTER);
+        southPanel.add(nowPlayingLabel, BorderLayout.NORTH);
+        southPanel.add(progressBar, BorderLayout.CENTER);
         southPanel.add(timeLabel, BorderLayout.EAST);
         frame.add(southPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
@@ -237,6 +241,7 @@ public class MusicPlayer {
             if (timer != null) {
                 timer.stop();
                 timeLabel.setText("0:00");
+                progressBar.setValue(0);
             }
         }
     }
@@ -289,8 +294,14 @@ public class MusicPlayer {
 
     private void updateTimeLabel() {
         if (currentClip != null) {
-            long seconds = currentClip.getMicrosecondPosition() / 1000000;
+            long currentPosition = currentClip.getMicrosecondPosition();
+            long totalLength = currentClip.getMicrosecondLength();
+            long seconds = currentPosition / 1000000;
             timeLabel.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
+            
+            // Update progress bar
+            int progress = (int)((currentPosition * 100.0) / totalLength);
+            progressBar.setValue(progress);
         }
     }
 
