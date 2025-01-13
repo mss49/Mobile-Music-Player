@@ -20,6 +20,8 @@ public class MusicPlayer {
     private JLabel nowPlayingLabel;
     private JLabel timeLabel;
     private Timer timer;
+    private boolean isMuted = false;
+    private float lastVolume = 100;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -46,14 +48,6 @@ public class MusicPlayer {
         songList = new JList<>(songListModel);
         JScrollPane songListScrollPane = new JScrollPane(songList);
         songListScrollPane.setPreferredSize(new Dimension(200, 300));
-
-        songList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    playSelectedSong();
-                }
-            }
-        });
 
         // Create the playlist panel
         DefaultListModel<Song> playlistModel = new DefaultListModel<>();
@@ -86,6 +80,10 @@ public class MusicPlayer {
         buttonPanel.add(addButton);
         buttonPanel.add(renameButton);
         buttonPanel.add(deleteButton);
+
+        JButton muteButton = new JButton("Mute");
+        muteButton.addActionListener(e -> toggleMute());
+        buttonPanel.add(muteButton);
 
         volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
         volumeSlider.addChangeListener(e -> updateVolume());
@@ -293,6 +291,19 @@ public class MusicPlayer {
         if (currentClip != null) {
             long seconds = currentClip.getMicrosecondPosition() / 1000000;
             timeLabel.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
+        }
+    }
+
+    private void toggleMute() {
+        if (currentClip != null) {
+            isMuted = !isMuted;
+            if (isMuted) {
+                lastVolume = volumeSlider.getValue();
+                volumeSlider.setValue(0);
+            } else {
+                volumeSlider.setValue((int) lastVolume);
+            }
+            updateVolume();
         }
     }
 
