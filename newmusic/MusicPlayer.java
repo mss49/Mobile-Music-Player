@@ -14,6 +14,7 @@ public class MusicPlayer {
     private JFrame frame;
     private DefaultListModel<Song> songListModel;
     private JList<Song> songList;
+    private JSlider volumeSlider;
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -24,13 +25,32 @@ public class MusicPlayer {
     private void createGUI() {
         frame = new JFrame("Music Player");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        frame.setSize(800, 400);
         frame.setLayout(new BorderLayout());
 
+        // Create the search bar
+        JPanel searchPanel = new JPanel();
+        JTextField searchField = new JTextField(20);
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(e -> searchSongs(searchField.getText()));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+
+        // Create the song list panel
         songListModel = new DefaultListModel<>();
         songList = new JList<>(songListModel);
-        frame.add(new JScrollPane(songList), BorderLayout.CENTER);
+        JScrollPane songListScrollPane = new JScrollPane(songList);
+        songListScrollPane.setPreferredSize(new Dimension(200, 300));
 
+        // Create the playlist panel
+        DefaultListModel<Song> playlistModel = new DefaultListModel<>();
+        JList<Song> playlistList = new JList<>(playlistModel);
+        JScrollPane playlistScrollPane = new JScrollPane(playlistList);
+        playlistScrollPane.setPreferredSize(new Dimension(200, 300));
+
+        // Create the button panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(2, 4));
         JButton playButton = new JButton("Play");
         playButton.addActionListener(e -> playSelectedSong());
         JButton pauseButton = new JButton("Pause");
@@ -46,8 +66,6 @@ public class MusicPlayer {
         JButton deleteButton = new JButton("Delete Song");
         deleteButton.addActionListener(e -> deleteSelectedSong());
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(2, 4));
         buttonPanel.add(playButton);
         buttonPanel.add(pauseButton);
         buttonPanel.add(resumeButton);
@@ -56,7 +74,25 @@ public class MusicPlayer {
         buttonPanel.add(renameButton);
         buttonPanel.add(deleteButton);
 
-        frame.add(buttonPanel, BorderLayout.SOUTH);
+        volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
+        volumeSlider.addChangeListener(e -> updateVolume());
+        buttonPanel.add(volumeSlider);
+
+        // Create a main panel to hold the song list and button panel
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(songListScrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Create a panel to hold both the song list and playlist
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new GridLayout(1, 2)); // Two columns for song list and playlist
+        sidePanel.add(mainPanel);
+        sidePanel.add(playlistScrollPane);
+
+        // Add components to the frame
+        frame.add(searchPanel, BorderLayout.NORTH);
+        frame.add(sidePanel, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 
@@ -202,6 +238,24 @@ public class MusicPlayer {
             }
         } else {
             JOptionPane.showMessageDialog(frame, "Please select a song to delete.");
+        }
+    }
+
+    // Method to handle song search
+    private void searchSongs(String query) {
+        List<Song> results = searchSongs(query);
+        songListModel.clear();
+        for (Song song : results) {
+            songListModel.addElement(song);
+        }
+    }
+
+    private void updateVolume() {
+        if (currentClip != null) {
+            FloatControl gainControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
+            float range = gainControl.getMaximum() - gainControl.getMinimum();
+            float gain = (range * (volumeSlider.getValue() / 100.0f)) + gainControl.getMinimum();
+            gainControl.setValue(gain);
         }
     }
 
