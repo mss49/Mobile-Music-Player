@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MusicPlayer {
     private List<Song> playlist;
@@ -16,11 +18,8 @@ public class MusicPlayer {
     private JList<Song> songList;
     private JSlider volumeSlider;
     private JLabel nowPlayingLabel;
-35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
     private JLabel timeLabel;
     private Timer timer;
-
-main
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
@@ -47,6 +46,14 @@ main
         songList = new JList<>(songListModel);
         JScrollPane songListScrollPane = new JScrollPane(songList);
         songListScrollPane.setPreferredSize(new Dimension(200, 300));
+
+        songList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    playSelectedSong();
+                }
+            }
+        });
 
         // Create the playlist panel
         DefaultListModel<Song> playlistModel = new DefaultListModel<>();
@@ -101,15 +108,12 @@ main
         frame.add(sidePanel, BorderLayout.CENTER);
         nowPlayingLabel = new JLabel("Now Playing: None");
         nowPlayingLabel.setHorizontalAlignment(JLabel.CENTER);
-35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
         timeLabel = new JLabel("0:00");
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(nowPlayingLabel, BorderLayout.CENTER);
         southPanel.add(timeLabel, BorderLayout.EAST);
         frame.add(southPanel, BorderLayout.SOUTH);
-        frame.add(nowPlayingLabel, BorderLayout.SOUTH);
-main
         frame.setVisible(true);
     }
 
@@ -232,12 +236,10 @@ main
             currentClip.close();
             isPlaying = false;
             nowPlayingLabel.setText("Now Playing: None");
-35-as-a-user-i-want-a-time-elapsed-display-for-the-current-song
             if (timer != null) {
                 timer.stop();
                 timeLabel.setText("0:00");
             }
-main
         }
     }
 
