@@ -382,12 +382,33 @@ public class MusicPlayer {
     private void renameSelectedSong() {
         Song selectedSong = songList.getSelectedValue();
         if (selectedSong != null) {
+            // Prompt for new name
             String newName = JOptionPane.showInputDialog(frame, "Enter new song name:", selectedSong.getName());
-            if (newName != null && !newName.trim().isEmpty()) {
-                renameSong(selectedSong.getName(), newName.trim());
+            
+            // Prompt for new path
+            String newPath = JOptionPane.showInputDialog(frame, "Enter new file path:", selectedSong.getPath());
+            
+            // Update if either field was changed and not cancelled
+            if ((newName != null && !newName.trim().isEmpty()) || 
+                (newPath != null && !newPath.trim().isEmpty())) {
+                
+                // Update name if changed
+                if (newName != null && !newName.trim().isEmpty()) {
+                    renameSong(selectedSong.getName(), newName.trim());
+                } else {
+                    newName = selectedSong.getName();
+                }
+                
+                // Update path if changed
+                if (newPath != null && !newPath.trim().isEmpty()) {
+                    selectedSong.setPath(newPath.trim());
+                }
+                
+                // Update list and save changes
                 int selectedIndex = songList.getSelectedIndex();
-                songListModel.set(selectedIndex, new Song(newName.trim(), selectedSong.getPath()));
+                songListModel.set(selectedIndex, new Song(newName, newPath != null ? newPath : selectedSong.getPath()));
                 songList.repaint();
+                saveSongsToCSV();
             }
         } else {
             JOptionPane.showMessageDialog(frame, "Please select a song to rename.");
@@ -588,6 +609,10 @@ class Song {
 
     public String getPath() {
         return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     @Override
