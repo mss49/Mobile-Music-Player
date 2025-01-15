@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MusicPlayer {
     private List<Song> playlist;
@@ -252,10 +253,15 @@ public class MusicPlayer {
 
     private void addSong() {
         String name = JOptionPane.showInputDialog(frame, "Enter song name:");
-        String path = JOptionPane.showInputDialog(frame, "Enter song path:");
-        if (name != null && path != null) {
-            addSong(name, path);
-            songListModel.addElement(new Song(name, path));
+        if (name != null && !name.trim().isEmpty()) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Audio Files", "wav", "mp3"));
+            
+            if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                addSong(name, path);
+                songListModel.addElement(new Song(name, path));
+            }
         }
     }
 
@@ -385,12 +391,24 @@ public class MusicPlayer {
             // Prompt for new name
             String newName = JOptionPane.showInputDialog(frame, "Enter new song name:", selectedSong.getName());
             
-            // Prompt for new path
-            String newPath = JOptionPane.showInputDialog(frame, "Enter new file path:", selectedSong.getPath());
+            // File chooser for new path
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Audio Files", "wav", "mp3"));
+            String newPath = selectedSong.getPath();
             
-            // Update if either field was changed and not cancelled
+            int choice = JOptionPane.showConfirmDialog(frame, 
+                "Would you like to change the file path?", 
+                "Change Path", 
+                JOptionPane.YES_NO_OPTION);
+                
+            if (choice == JOptionPane.YES_OPTION && 
+                fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                newPath = fileChooser.getSelectedFile().getAbsolutePath();
+            }
+            
+            // Update if either field was changed
             if ((newName != null && !newName.trim().isEmpty()) || 
-                (newPath != null && !newPath.trim().isEmpty())) {
+                !newPath.equals(selectedSong.getPath())) {
                 
                 // Update name if changed
                 if (newName != null && !newName.trim().isEmpty()) {
@@ -399,14 +417,9 @@ public class MusicPlayer {
                     newName = selectedSong.getName();
                 }
                 
-                // Update path if changed
-                if (newPath != null && !newPath.trim().isEmpty()) {
-                    selectedSong.setPath(newPath.trim());
-                }
-                
                 // Update list and save changes
                 int selectedIndex = songList.getSelectedIndex();
-                songListModel.set(selectedIndex, new Song(newName, newPath != null ? newPath : selectedSong.getPath()));
+                songListModel.set(selectedIndex, new Song(newName, newPath));
                 songList.repaint();
                 saveSongsToCSV();
             }
@@ -459,13 +472,18 @@ public class MusicPlayer {
         if (currentClip != null) {
             long currentPosition = currentClip.getMicrosecondPosition();
             long totalLength = currentClip.getMicrosecondLength();
-            long seconds = currentPosition / 1000000;
-            timeLabel.setText(String.format("%d:%02d", seconds / 60, seconds % 60));
+            String currentTime = formatDuration(currentPosition);
+            String totalTime = formatDuration(totalLength);
+            timeLabel.setText(currentTime + " / " + totalTime);
             
-            // Update progress bar
             int progress = (int)((currentPosition * 100.0) / totalLength);
             progressBar.setValue(progress);
         }
+    }
+
+    private String formatDuration(long microseconds) {
+        long seconds = microseconds / 1_000_000;
+        return String.format("%d:%02d", seconds / 60, seconds % 60);
     }
 
     private void toggleMute() {
