@@ -1,3 +1,5 @@
+package src.main.java.musicplayer;
+
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +15,7 @@ import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import src.main.java.musicplayer.Song;
 
 public class MusicPlayer {
     private List<Song> playlist;
@@ -43,6 +46,7 @@ public class MusicPlayer {
 
     public MusicPlayer() {
         playlist = new ArrayList<>();
+        isLooping = false;
         createGUI();
         loadSongsFromCSV();
         loadSettings();
@@ -171,6 +175,16 @@ public class MusicPlayer {
         });
 
         frame.setVisible(true);
+
+        // Add tooltips
+        playButton.setToolTipText("Play (Space)");
+        pauseButton.setToolTipText("Pause (P)");
+        resumeButton.setToolTipText("Resume (R)");
+        previousButton.setToolTipText("Previous Song (Left Arrow)");
+        nextButton.setToolTipText("Next Song (Right Arrow)");
+        muteButton.setToolTipText("Mute (M)");
+        loopButton.setToolTipText("Toggle Loop");
+        volumeSlider.setToolTipText("Adjust Volume (Up/Down Arrows)");
     }
 
     private void addKeyboardShortcuts() {
@@ -265,7 +279,7 @@ public class MusicPlayer {
         }
     }
 
-    private void loadSongsFromCSV() {
+    public void loadSongsFromCSV() {
         try (BufferedReader br = new BufferedReader(new FileReader(csvFilePath))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -282,7 +296,7 @@ public class MusicPlayer {
         }
     }
 
-    private void saveSongsToCSV() {
+    public void saveSongsToCSV() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(csvFilePath))) {
             for (Song song : playlist) {
                 pw.println(song.getName() + "," + song.getPath());
@@ -385,7 +399,7 @@ public class MusicPlayer {
         }
     }
 
-    private void renameSelectedSong() {
+    public void renameSelectedSong() {
         Song selectedSong = songList.getSelectedValue();
         if (selectedSong != null) {
             // Prompt for new name
@@ -442,7 +456,7 @@ public class MusicPlayer {
     }
 
     // Method to handle song search
-    private void searchSongs(String query) {
+    public void searchSongs(String query) {
         songListModel.clear();
         if (query.trim().isEmpty()) {
             // If search is empty, show all songs
@@ -486,7 +500,7 @@ public class MusicPlayer {
         return String.format("%d:%02d", seconds / 60, seconds % 60);
     }
 
-    private void toggleMute() {
+    public void toggleMute() {
         if (currentClip != null) {
             isMuted = !isMuted;
             if (isMuted) {
@@ -499,23 +513,17 @@ public class MusicPlayer {
         }
     }
 
-    private void toggleLoop() {
-        isLooping = loopButton.isSelected();
+    public void toggleLoop() {
+        isLooping = !isLooping;
         if (currentClip != null) {
             currentClip.loop(isLooping ? Clip.LOOP_CONTINUOUSLY : 0);
         }
-    }
-
-    private void playPreviousSong() {
-        if (currentSongIndex > 0) {
-            currentSongIndex--;
-            Song previousSong = songListModel.getElementAt(currentSongIndex);
-            playSong(previousSong);
-            songList.setSelectedIndex(currentSongIndex);
+        if (loopButton != null) {
+            loopButton.setSelected(isLooping);
         }
     }
 
-    private void playNextSong() {
+    public void playNextSong() {
         if (currentSongIndex < songListModel.getSize() - 1) {
             currentSongIndex++;
             Song nextSong = songListModel.getElementAt(currentSongIndex);
@@ -524,7 +532,16 @@ public class MusicPlayer {
         }
     }
 
-    private void sortSongList() {
+    public void playPreviousSong() {
+        if (currentSongIndex > 0) {
+            currentSongIndex--;
+            Song previousSong = songListModel.getElementAt(currentSongIndex);
+            playSong(previousSong);
+            songList.setSelectedIndex(currentSongIndex);
+        }
+    }
+
+    public void sortSongList() {
         List<Song> songs = new ArrayList<>();
         for (int i = 0; i < songListModel.getSize(); i++) {
             songs.add(songListModel.getElementAt(i));
@@ -548,7 +565,7 @@ public class MusicPlayer {
         sortAscending = !sortAscending;
     }
 
-    private void toggleTheme() {
+    public void toggleTheme() {
         isDarkMode = !isDarkMode;
         Color bg = isDarkMode ? DARK_BG : LIGHT_BG;
         Color fg = isDarkMode ? DARK_FG : LIGHT_FG;
@@ -569,7 +586,7 @@ public class MusicPlayer {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    private void saveSettings() {
+    public void saveSettings() {
         try {
             Properties props = new Properties();
             props.setProperty("lastSong", String.valueOf(currentSongIndex));
@@ -603,38 +620,44 @@ public class MusicPlayer {
         }
     }
 
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public boolean isMuted() {
+        return isMuted;
+    }
+
+    public boolean isLooping() {
+        return isLooping;
+    }
+
+    public int getVolume() {
+        return volumeSlider.getValue();
+    }
+
+    public void setVolume(int volume) {
+        volumeSlider.setValue(Math.max(0, Math.min(100, volume)));
+        updateVolume();
+    }
+
+    public boolean isDarkMode() {
+        return isDarkMode;
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    public JList<Song> getSongList() {
+        return songList;
+    }
+
+    public JLabel getNowPlayingLabel() {
+        return nowPlayingLabel;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MusicPlayer::new);
-    }
-}
-
-class Song {
-    private String name;
-    private String path;
-
-    public Song(String name, String path) {
-        this.name = name;
-        this.path = path;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 }
