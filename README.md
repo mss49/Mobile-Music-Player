@@ -3,6 +3,7 @@
 ### Prerequisites
 - Java JDK 17 or higher
 - JUnit 5
+   
 ### Eclipse Project Setup
 
 1. **Option 1: Clone Repository**
@@ -21,6 +22,7 @@
    - File > Open Projects from File System.. > Directory >
    - Browse to cloned repository (Mobile-Music-Player-main)
    - Click Finish
+   - 
 
 4. **Configure Build Path**
    - Right-click project > Properties > Java Build Path
@@ -28,7 +30,17 @@
    - Add Library > JRE System Library > JDK 17
    - Apply and Close
 
-5. **Verify Project Structure**
+### Important Note About Test Files
+Due to GitHub file limitations, the test audio .wav files cannot be downloaded from GitHub and must be downloaded separately.
+
+Google Drive: [[Drive](https://drive.google.com/drive/folders/1KzXpnDLazx7LJHMH8nlDGSR_i8F3B4MZ?usp=drive_link)] 
+
+### Test File Setup
+1. After downloading the .wav files
+2. Place them in: `music` directory
+
+
+**Verify Project Structure**
    ```
    src/
      main/
@@ -51,6 +63,9 @@
    songs.csv
            
    ```
+
+
+
 ### First-Time Setup
 1. To launch the program, open the MusicPlayer.java file and select Run in Eclipse
 2. Or right click the MusicPlayer.java file in the project explorer -> Run As -> Java Application
