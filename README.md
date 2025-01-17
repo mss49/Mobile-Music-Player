@@ -36,8 +36,10 @@ Due to GitHub file limitations, the test audio .wav files cannot be downloaded f
 Google Drive: [[Drive](https://drive.google.com/drive/folders/1KzXpnDLazx7LJHMH8nlDGSR_i8F3B4MZ?usp=drive_link)] 
 
 ### Test File Setup
-1. After downloading the .wav files
-2. Place them in: `music` directory
+1. Open the Google Drive
+2. Select all 3 tracks, right click, download
+3. Unzip the files
+4. Place them in: `music` directory - replace if necessary
 
 
 **Verify Project Structure**
