@@ -1,26 +1,117 @@
-# Group12
-Ubiquitous Mobile Music Player Application
+# Group 12: Ubiquitous Music Player Application
 
-Report
-https://docs.google.com/document/d/1XUYhPjxgP_GXN2yNNizM0SQ3dE2R3F3WKfSkHXxio4k/edit?tab=t.0
+### Prerequisites
+- Java JDK 17 or higher
+- JUnit 5
+### Eclipse Project Setup
 
-# Adding JLayer
-1. Download "jlayer-1.0.1.jar" [https://repo1.maven.org/maven2/javazoom/jlayer/1.0.1/](https://github.com/mss49/Mobile-Music-Player/blob/main/jlayer-1.0.1.jar)
-2 Import into your eclipse: Right-click on your project in the Project Explorer pane.
-3. Click Properties.
-4. In the Properties dialog, select Java Build Path on the left-hand side.
-5. Click on the Libraries tab.
-6. Click the Add External JARs... button.
-7. Navigate to the location where you downloaded the jlayer-X.X.X.jar file and select it.
-8. Click Apply and Close to confirm.
+1. **Option 1: Clone Repository**
+   ```bash
+   git clone https://github.com/mss49/Mobile-Music-Player.git
+   ```
+   
+2.  **Option 2: Download ZIP**
+- Visit https://github.com/mss49/Mobile-Music-Player
+- Click the green 'Code' button
+- Select 'Download ZIP'
+- Extract the ZIP file to your desired location
 
-# Adding JavaFX
-1. Download the latest version of the JavaFX SDK for your platform (Windows, macOS, or Linux): https://gluonhq.com/products/javafx/
-2. Extract the downloaded ZIP file to a folder (e.g., C:\javafx-sdk-17).
-3. Right-click on your project in the Project Explorer and select Properties.
-4. In the left pane, select Java Build Path.
-5. Click the Libraries tab.
-6. Click Add External JARs....
-7. Navigate to the lib folder inside the JavaFX SDK folder you downloaded (e.g., C:\javafx-sdk-17\lib).
-8. Select all the JAR files in the lib folder and click Open. These JARs will be added to your project's build path.
+3. **Import Project**
+   - Open Eclipse
+   - File > Import > General > Existing Projects into Workspace
+   - Select root directory: Browse to cloned repository
+   - Click Finish
+
+4. **Configure Build Path**
+   - Right-click project > Properties > Java Build Path
+   - Add Library > JUnit > JUnit 5
+   - Add Library > JRE System Library > JDK 17
+
+5. **Verify Project Structure**
+   ```
+   src/
+     main/
+       java/
+         musicplayer/
+           MusicPlayer.java
+           Song.java
+   test/
+     blackbox/
+           RandomBasedTest.java
+           SpecificationBasedTest.java
+           
+     whitebox/
+           BranchBasedTest.java
+           StatementBasedTest.java
+   music/
+     test.wav
+     test2.wav
+     test3.wav
+   songs.csv
+           
+   ```
+### First-Time Setup
+1. To launch the program, open the MusicPlayer.java file and select Run in Eclipse
+2. Or right click the MusicPlayer.java file in the project explorer -> Run As -> Java Application
+3. When exiting, the application will create:
+   - `settings.properties` file for storing preferences
+
+4. To add music:
+   - Click "Add Song" button
+   - Enter song name when prompted
+   - Select audio file from file chooser
+   - Supported formats: .wav
+  
+## Running Tests
+
+### Test Categories
+
+1. **Specification-Based Tests**
+   - Settings management
+   - Playback controls
+   - File operations
+   - Search functionality
+   - Volume control
+   - Loop/Mute toggles
+   - Keyboard shortcuts
+
+2. **Random-Based Tests**
+   - Random playback operations
+   - Random playlist navigation
+
+3. **Statement-Based Tests**
+   - PlaySong statements
+   - Pause/Resume statements
+   - Stop statements
+   - Toggle statements
+   - File operations statements
+
+4. **Branch-Based Tests**
+   - Theme toggle branches
+   - Volume control branches
+   - Navigation control branches
+   - Loop control branches
+
+### Running Tests in Eclipse
+
+1. **Run All Tests**
+   - Right-click on project folder in project explorer
+   - Run As > JUnit Test
+
+2. **Run Specific Test Class**
+   - Right-click desired test package (e.g. test.blackbox) or test file (e.g. RandomBasedTest.java)
+   - Run As > JUnit Test
+
+3. **Run Individual Test**
+   - Open test file
+   - Right-click on test method
+   - Run As > JUnit Test
+
+### Test Coverage
+
+To view test coverage:
+1. Right-click project folder in project explorer
+2. Coverage As > JUnit Test
+3. View coverage results in Coverage view
+
 
