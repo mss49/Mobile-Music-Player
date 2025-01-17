@@ -18,14 +18,15 @@
 
 3. **Import Project**
    - Open Eclipse
-   - File > Import > General > Existing Projects into Workspace
-   - Select root directory: Browse to cloned repository
+   - File > Open Projects from File System.. > Directory >
+   - Browse to cloned repository (Mobile-Music-Player-main)
    - Click Finish
 
 4. **Configure Build Path**
    - Right-click project > Properties > Java Build Path
-   - Add Library > JUnit > JUnit 5
+   - Select Classpath > Add Library > JUnit > JUnit 5
    - Add Library > JRE System Library > JDK 17
+   - Apply and Close
 
 5. **Verify Project Structure**
    ```
